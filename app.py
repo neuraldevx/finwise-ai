@@ -1,5 +1,6 @@
 import streamlit as st
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+from transformers import pipeline
+import os
 
 # Access Hugging Face token from secrets
 hf_token = st.secrets["HF_TOKEN"]
@@ -8,15 +9,18 @@ hf_token = st.secrets["HF_TOKEN"]
 @st.cache(allow_output_mutation=True)
 def load_pipeline():
     model_id = "meta-llama/Meta-Llama-3-8B"
-    pipe = pipeline("text-generation", model=model_id, use_auth_token=hf_token)
-    return pipe
+    try:
+        pipe = pipeline("text-generation", model=model_id, use_auth_token=hf_token)
+        return pipe
+    except Exception as e:
+        st.error(f"Error loading model pipeline: {e}")
+        return None
 
 # Load the pipeline
 pipe = load_pipeline()
 
 # Ensure the pipeline is loaded successfully
 if pipe is None:
-    st.error("Failed to load the model pipeline.")
     st.stop()
 
 # Streamlit interface
