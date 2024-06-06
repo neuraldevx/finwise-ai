@@ -8,9 +8,15 @@ hf_token = st.secrets["HF_TOKEN"]
 # Function to load the model using pipeline
 @st.cache(allow_output_mutation=True)
 def load_pipeline():
-    model_id = "meta-llama/Meta-Llama-3-8B"
+    model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
     try:
-        pipe = pipeline("text-generation", model=model_id, use_auth_token=hf_token)
+        pipe = pipeline(
+            "text-generation",
+            model=model_id,
+            model_kwargs={"torch_dtype": "auto"},
+            device="cuda",
+            use_auth_token=hf_token
+        )
         return pipe
     except Exception as e:
         st.error(f"Error loading model pipeline: {e}")
